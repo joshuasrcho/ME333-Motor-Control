@@ -21,6 +21,7 @@ int main()
   encoder_init(); // initialize encoder
   adc_init(); // initialize adc peripheral for current sensor
   icontroller_init(); // initialize current controller module
+  pcontroller_init(); // initialize position controller module
   __builtin_enable_interrupts();
 
   while(1)

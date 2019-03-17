@@ -1,6 +1,7 @@
 #ifndef POSITIONCONTROL_H
 #define POSITIONCONTROL_H
 
+void pcontroller_init();
 void set_position_gains(float kp, float ki, float kd);
 float get_position_kp();
 float get_position_ki();

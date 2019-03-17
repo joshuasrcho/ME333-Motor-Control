@@ -136,7 +136,7 @@ void icontroller_init(){
   T4CONbits.TCKPS = 2; // Prescaler N = 4
   PR4 = 3999; // Period = (PR4+1) * N * 12.5 ns = 0.2 ms. f = 5kHz
   TMR4 = 0; // initial timer4 count = 0
-  T4CONbits.ON = 1; // turn on Timer4************************
+  T4CONbits.ON = 1; // turn on Timer4
   IPC4bits.T4IP = 5; // interrupt priority is 5
   IPC4bits.T4IS = 0; // interrupt subpriority is 0
   IFS0bits.T4IF = 0; // clear interrupt flag
