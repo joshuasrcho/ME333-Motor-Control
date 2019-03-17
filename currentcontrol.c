@@ -35,19 +35,27 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) Timer4ISR(void) {
     case 2: // ITEST mode
     {
       static int plotind = 0; // variable that counts from 0 to 99
-      static int ref_current = 200; // initial reference current of 200 mA
+      static int ref_current = -200; // initial reference current of 200 mA
       static float actual_current;
+
+      actual_current = get_current(); // obtain actual current
 
       if ((plotind % 25) == 0){
         // change refrence current sign every 25 counts
         ref_current = -1*ref_current;
       }
 
-      actual_current = get_current(); // obtain actual current
-
       // put reference current and actual current into PI controller
       current_controller(actual_current, ref_current);
-      OC1RS = duty_cycle;
+
+      if (duty_cycle < 0){ // if duty cycle is negative
+        OC1RS = duty_cycle * -1; // make sure OC1RS is positive
+        LATBbits.LATB1 = 0;  // go reverse direction
+      }
+      else{
+        OC1RS = duty_cycle;
+        LATBbits.LATB1 = 1;
+      }
 
       // store reference and actual current into array so we can plot them later
       ref_current_array[plotind] = ref_current;
@@ -100,11 +108,11 @@ float get_actual_current_array(int index){ // send actual current array for plot
 void current_controller(float current, int ref){
   float e = 0;
   float u = 0;
-  e = (float)ref-current; // find error between reference and ADC reading
+  e = (float)ref - current; // find error between reference and ADC reading
   Eint = Eint + e; // Integral term
   u = KP*e + KI*Eint; // PI controller equation
 
-  set_duty_cycle((int) u); // convert control effort unew to value between 0 and PR3
+  set_duty_cycle(u);
 }
 
 
