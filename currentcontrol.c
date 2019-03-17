@@ -3,8 +3,6 @@
 #include "isense.h"
 #include "NU32.h"
 
-#define PLOTPTS 100
-
 static volatile int duty_cycle;
 static volatile float KP, KI;
 static volatile int ref_current_array[PLOTPTS];
@@ -38,7 +36,7 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) Timer4ISR(void) {
     {
       static int plotind = 0; // variable that counts from 0 to 99
       static int ref_current = 200; // initial reference current of 200 mA
-      static float actual_current = 0;
+      static float actual_current;
 
       if ((plotind % 25) == 0){
         // change refrence current sign every 25 counts
@@ -49,6 +47,7 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) Timer4ISR(void) {
 
       // put reference current and actual current into PI controller
       current_controller(actual_current, ref_current);
+      OC1RS = duty_cycle;
 
       // store reference and actual current into array so we can plot them later
       ref_current_array[plotind] = ref_current;
@@ -90,14 +89,22 @@ float get_ki(){ // send kp value for menu item 'h'
   return KI;
 }
 
-void current_controller(float adc, int ref){
+int get_ref_current_array(int index){ // send reference current array for plotting
+  return ref_current_array[index];
+}
+
+float get_actual_current_array(int index){ // send actual current array for plotting
+  return actual_current_array[index];
+}
+
+void current_controller(float current, int ref){
   float e = 0;
   float u = 0;
-  e = ref-adc; // find error between reference and ADC reading
+  e = (float)ref-current; // find error between reference and ADC reading
   Eint = Eint + e; // Integral term
   u = KP*e + KI*Eint; // PI controller equation
 
-  //OC1RS = (unsigned int) ((unew/100.0)*PR3); // convert control effort unew to value between 0 and PR3
+  set_duty_cycle((int) u); // convert control effort unew to value between 0 and PR3
 }
 
 

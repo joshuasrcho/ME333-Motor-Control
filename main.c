@@ -2,6 +2,7 @@
 #include "encoder.h"       // allows  you to use encoder module
 #include "utilities.h"     // allows you to get and set PIC32 mode
 #include "isense.h"        // allows you to use current sensor module
+#include "currentcontrol.h"
 #include <stdio.h>
 // include other header files here
 
@@ -34,7 +35,7 @@ int main()
 
       case 'b': // read calibrated and measured current from the current sensor in mA
       {
-        sprintf(buffer,"%f\r\n",get_current());
+        sprintf(buffer,"%.2f\r\n",get_current());
         NU32_WriteUART3(buffer);
         break;
       }
@@ -84,6 +85,23 @@ int main()
       {
         sprintf(buffer,"%f %f\r\n",get_kp(),get_ki());
         NU32_WriteUART3(buffer);
+        break;
+      }
+
+      case 'k': // Test current gains. Set mode to ITEST
+      {
+        set_mode(ITEST);
+        while (get_mode() == ITEST){ // wait while testing...
+          ;
+        }
+        sprintf(buffer,"%d\r\n",PLOTPTS);
+        NU32_WriteUART3(buffer); // send the number of samples PIC will be sending (100)
+        int i;
+        for (i=0;i<PLOTPTS;i++){ // for each loop PIC sends out a pair of samples
+
+          sprintf(buffer,"%d %f\r\n",get_ref_current_array(i),get_actual_current_array(i));
+          NU32_WriteUART3(buffer);
+        }
         break;
       }
 

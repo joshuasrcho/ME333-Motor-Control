@@ -72,6 +72,10 @@ while ~has_quit
             else
                 fprintf('PWM has been set to %d%% in the counterclockwise direction.\n\n',duty_cycle);
             end
+        
+        case 'k'
+            fprintf('k mode\n');
+            read_plot_matrix(mySerial);
             
         case 'p'
             fprintf('PIC32 controller switched to IDLE mode\n\n');
