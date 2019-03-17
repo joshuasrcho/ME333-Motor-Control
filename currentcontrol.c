@@ -45,14 +45,14 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) Timer4ISR(void) {
         ref_current = -1*ref_current;
       }
 
-      //actual_current = get_current(); // obtain actual current
+      actual_current = get_current(); // obtain actual current
 
       // put reference current and actual current into PI controller
-      //current_controller(actual_current, ref_current);
+      current_controller(actual_current, ref_current);
 
       // store reference and actual current into array so we can plot them later
       ref_current_array[plotind] = ref_current;
-      //actual_current_array[plotind] = actual_current;
+      actual_current_array[plotind] = actual_current;
 
       if (plotind == PLOTPTS){
         // go back to IDLE mode if plotind reaches 99
@@ -96,7 +96,7 @@ void current_controller(float adc, int ref){
   e = ref-adc; // find error between reference and ADC reading
   Eint = Eint + e; // Integral term
   u = KP*e + KI*Eint; // PI controller equation
-  }
+
   //OC1RS = (unsigned int) ((unew/100.0)*PR3); // convert control effort unew to value between 0 and PR3
 }
 
