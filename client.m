@@ -72,12 +72,23 @@ while ~has_quit
             else
                 fprintf('PWM has been set to %d%% in the counterclockwise direction.\n\n',duty_cycle);
             end
+        case 'g'                            % Set current gains Kp and Ki
+            kp = input('Enter your desired Kp current gain [recommended: 0.32]: ');
+            fprintf(mySerial,'%f\n',kp);
+            ki = input('Enter your desired Ki current gain [recommended: 0.041: ');
+            fprintf(mySerial,'%f\n',ki);
+            fprintf('\n');
+            
+        case 'h'
+            gains = zeros(1,2);
+            gains(1,:) = fscanf(mySerial, '%f %f');
+            fprintf('The current controller is using Kp = %.4f and Ki = %.4f\n\n',gains(1),gains(2));
         
-        case 'k'
+        case 'k'                            % Test current control and make plot
             fprintf('k mode\n');
             read_plot_matrix(mySerial);
             
-        case 'p'
+        case 'p'                            % Unpower the motor
             fprintf('PIC32 controller switched to IDLE mode\n\n');
             
         case 'q'

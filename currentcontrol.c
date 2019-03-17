@@ -36,7 +36,7 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) Timer4ISR(void) {
     {
       static int plotind = 0; // variable that counts from 0 to 99
       static int ref_current = -200; // initial reference current of 200 mA
-      static float actual_current;
+      static float actual_current = 0;
 
       actual_current = get_current(); // obtain actual current
 
@@ -64,6 +64,9 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) Timer4ISR(void) {
       if (plotind == PLOTPTS){
         // go back to IDLE mode if plotind reaches 99
         set_mode(IDLE);
+        plotind = 0; // reset plot index and current and reference current
+        actual_current = 0;
+        ref_current = -200;
         break;
       }
       plotind ++;

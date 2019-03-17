@@ -66,25 +66,38 @@ while ~has_quit
         
         case 'f'                            % set PWM duty cycle and direction
             duty_cycle = input('What PWM value would you like [-100 to 100]? '); 
-            fprintf(mySerial,'%d',duty_cycle);
+            fprintf(mySerial,'%d\n',duty_cycle);
             if (duty_cycle < 0)
                 fprintf('PWM has been set to %d%% in the clockwise direction.\n',-1*duty_cycle);
             else
                 fprintf('PWM has been set to %d%% in the counterclockwise direction.\n\n',duty_cycle);
             end
+        case 'g'                            % Set current gains Kp and Ki
+            kp = input('Enter your desired Kp current gain: ');
+            fprintf(mySerial,'%f\n',kp);
+            ki = input('Enter your desired Ki current gain: ');
+            fprintf(mySerial,'%f\n',ki);
             
-        case 'p'
+        case 'h'
+            gains = zeros(1,2);
+            gains(1,:) = fscanf(mySerial, '%f %f');
+            fprintf('The current controller is using Kp = %.2f and Ki = %.2f\n',gains(1),gains(2));
+        
+        case 'k'                            % Test current control and make plot
+            fprintf('k mode\n');
+            read_plot_matrix(mySerial);
+            
+        case 'p'                            % Unpower the motor
             fprintf('PIC32 controller switched to IDLE mode\n\n');
             
         case 'q'
             has_quit = true;                % exit client
             
         case 'r'                            % print out current mode 
-            fprintf('The PIC32 controller mode is currently ');
-            mode = fscanf(mySerial,'%d');
-            %fprintf("%d\n",mode);
+            fprintf('scanning\n');
             mode_names = ["IDLE", "PWM", "ITEST", "HOLD", "TRACK"];
-            %s\n\n',mode_names(mode+1));
+            mode = fscanf(mySerial,'%d');
+            fprintf('The PIC32 controller mode is currently %s\n\n',mode_names(mode+1));
             
         otherwise
             fprintf('Invalid Selection %c\n\n', selection);
