@@ -2,8 +2,10 @@
 #include "encoder.h"       // allows  you to use encoder module
 #include "utilities.h"     // allows you to get and set PIC32 mode
 #include "isense.h"        // allows you to use current sensor module
-#include "currentcontrol.h"
+#include "currentcontrol.h" // allows you to use current controller module
+#include "positioncontrol.h" // allows you to use position controller module
 #include <stdio.h>
+
 // include other header files here
 
 #define BUF_SIZE 200
@@ -83,7 +85,27 @@ int main()
 
       case 'h': // get current gains
       {
-        sprintf(buffer,"%f %f\r\n",get_kp(),get_ki());
+        sprintf(buffer,"%f %f\r\n",get_current_kp(),get_current_ki());
+        NU32_WriteUART3(buffer);
+        break;
+      }
+
+      case 'i': // set poisition gains
+      {
+        float kp,ki,kd;
+        NU32_ReadUART3(buffer,BUF_SIZE);
+        sscanf(buffer,"%f",&kp);
+        NU32_ReadUART3(buffer,BUF_SIZE);
+        sscanf(buffer,"%f",&ki);
+        NU32_ReadUART3(buffer,BUF_SIZE);
+        sscanf(buffer,"%f",&kd);
+        set_position_gains(kp,ki,kd);
+        break;
+      }
+
+      case 'j': // get position gains
+      {
+        sprintf(buffer,"%f %f %f\r\n",get_position_kp(),get_position_ki(),get_position_kd());
         NU32_WriteUART3(buffer);
         break;
       }

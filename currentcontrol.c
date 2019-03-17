@@ -92,11 +92,11 @@ void set_current_gains(float kp, float ki){ // set kp and ki based on user input
   Eint = 0;
 }
 
-float get_kp(){ // send kp value for menu item 'h'
+float get_current_kp(){ // send kp value for menu item 'h'
   return KP;
 }
 
-float get_ki(){ // send kp value for menu item 'h'
+float get_current_ki(){ // send ki value for menu item 'h'
   return KI;
 }
 
