@@ -3,8 +3,6 @@
 #include "encoder.h"
 #include "NU32.h"
 
-
-
 static volatile float KP, KI, KD; // global Kp, Ki, and Kd position gains
 static volatile float TARGET_ANGLE;
 static volatile int NUMSAMPS;
