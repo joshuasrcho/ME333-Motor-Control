@@ -35,8 +35,14 @@ while ~has_quit
     fprintf('PIC32 MOTOR DRIVER INTERFACE\n\n');
     % display the menu options; this list will grow
     fprintf('     a: Read current sensor (ADC counts)    b: Read current sensor (mA)\n');
-    fprintf('     c: Encoder Angle (Count)               d: Encoder Angle (Degree)\n');    
-    fprintf('     e: Encoder Reset                       q: Quit\n');
+    fprintf('     c: Read encoder (count)                d: Read encoder (deg)\n');    
+    fprintf('     e: Reset encoder                       f: Set PWM (-100 to 100)\n');
+    fprintf('     g: Set current gains                   h: Get current gains\n');
+    fprintf('     i: Set position gains                  j: Get position gains\n');
+    fprintf('     k: Test current control                l: Go to angle (deg)\n');
+    fprintf('     m: Load step trajectory                n: Load cubic trajectory\n');
+    fprintf('     o: Execute trajectory                  p: Unpower the motor\n');
+    fprintf('     q: Quit client                         r: Get mode\n\n');
     % read the user's choice
     selection = input('\nENTER COMMAND: ', 's');
      
@@ -101,7 +107,7 @@ while ~has_quit
             
             
         case 'k'                            % Test current control and make plot
-            fprintf('k mode\n');
+            fprintf('Running current control test...\n');
             read_plot_matrix(mySerial);
         
         case 'l'
