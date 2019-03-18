@@ -142,15 +142,16 @@ int main()
       case 'm': // Load step trajectory
       {
         int num_samples, i;
-        NU32_ReadUART3(buffer,BUF_SIZE); // obtain the number of reference trajectory samples
-        sscanf(buffer,"%d",&num_samples);
+        float ref_trajectory[MAX_TRACK_SAMPLE]; // can hold 2000 floating pt numbers
 
-        float ref_trajectory[num_samples];
+        NU32_ReadUART3(buffer,BUF_SIZE); // obtain the number of reference trajectory samples
+        sscanf(buffer,"%d",&num_samples); // store this number into num_samples
 
         for (i=0; i<num_samples; i++){
           NU32_ReadUART3(buffer,BUF_SIZE); // obtain all reference trajectory samples
-          sscanf(buffer,"%d",&(ref_trajectory[i]));
+          sscanf(buffer,"%f",&(ref_trajectory[i])); // store these values to reference array
         }
+
         set_trajectory(num_samples,ref_trajectory);
         break;
       }
@@ -165,7 +166,7 @@ int main()
 
         for (i=0; i<num_samples; i++){
           NU32_ReadUART3(buffer,BUF_SIZE); // obtain all reference trajectory samples
-          sscanf(buffer,"%d",&(ref_trajectory[i]));
+          sscanf(buffer,"%f",&(ref_trajectory[i]));
         }
         set_trajectory(num_samples,ref_trajectory);
         break;
@@ -173,7 +174,18 @@ int main()
 
       case 'o': // Execute trajectory
       {
+        int i, n;
         set_mode(TRACK);
+        while(get_mode() == TRACK){
+          ; // while tracking, do nothing
+        }
+        n = get_numsamps(); // get the number of samples in reference/measured position array
+        sprintf(buffer,"%d\r\n", n);
+        NU32_WriteUART3(buffer);
+        for (i=0; i<n; i++){
+          sprintf(buffer,"%f %f\r\n", get_ref_angle_array(i), get_angle_array(i));
+          NU32_WriteUART3(buffer);
+        }
         break;
       }
 

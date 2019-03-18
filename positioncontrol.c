@@ -3,13 +3,15 @@
 #include "encoder.h"
 #include "NU32.h"
 
-#define MAX_TRACK_SAMPLE  2000 // 200Hz * 10 seconds = 2000
+
 
 static volatile float KP, KI, KD; // global Kp, Ki, and Kd position gains
 static volatile float TARGET_ANGLE;
+static volatile int NUMSAMPS;
 static volatile float Eint = 0;
 static volatile float Eprev = 0;
 static volatile float trajectory_array[MAX_TRACK_SAMPLE];
+static volatile float angle_array[MAX_TRACK_SAMPLE];
 
 void __ISR(_TIMER_3_VECTOR, IPL4SOFT) Timer3ISR(void) {
 
@@ -25,11 +27,18 @@ void __ISR(_TIMER_3_VECTOR, IPL4SOFT) Timer3ISR(void) {
     }
     case 4: // check if in TRACK mode
     {
-      static int trajectory_counter = 0;
+      static int tcounter = 0;
       static float current_angle;
       current_angle = encoder_degrees();
-      position_controller(trajectory_array[trajectory_counter],current_angle);
-      trajectory_counter++;
+      position_controller(trajectory_array[tcounter],current_angle);
+      angle_array[tcounter] = current_angle;
+      if (tcounter == NUMSAMPS){
+        tcounter = 0; // reset plot index and current and reference current
+        set_mode(HOLD);
+        TARGET_ANGLE = current_angle;
+
+      }
+      tcounter++;
       break;
     }
 
@@ -72,7 +81,19 @@ void set_trajectory(int n, float *tarray){ //takes pointer to a float array
   for (i=0; i<n; i++){
     trajectory_array[i] = tarray[i];
   }
+  NUMSAMPS = n;
+}
 
+float get_angle_array(int index){ // send angle array for plotting in TRACK mode
+  return angle_array[index];
+}
+
+float get_ref_angle_array(int index){ // send referenece trajectory array for plotting in TRACK mode
+  return trajectory_array[index];
+}
+
+int get_numsamps(){
+  return NUMSAMPS;
 }
 
 void position_controller(float target, float current){

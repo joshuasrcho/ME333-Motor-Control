@@ -54,9 +54,9 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) Timer4ISR(void) {
         plotind = 0; // reset plot index and current and reference current
         actual_current = 0;
         ref_current = -200;
-        break;
       }
       plotind ++;
+      break;
     }
 
     case 3: // HOLD mode

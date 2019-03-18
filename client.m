@@ -85,16 +85,16 @@ while ~has_quit
             gains(1,:) = fscanf(mySerial, '%f %f');
             fprintf('The current controller is using Kp = %.4f and Ki = %.4f\n\n',gains(1),gains(2));
         
-        case 'i'
-            kp = input('Enter your desired Kp position gain: ');
+        case 'i'                            % Set position gains Kp, Ki, and Kd
+            kp = input('Enter your desired Kp position gain [recommended: 7]: ');
             fprintf(mySerial,'%f\n',kp);
-            ki = input('Enter your desired Ki position gain: ');
+            ki = input('Enter your desired Ki position gain [recommended: 0]: ');
             fprintf(mySerial,'%f\n',ki);
-            kd = input('Enter your desired Kd position gain: ');
+            kd = input('Enter your desired Kd position gain [recommended: 100]: ');
             fprintf(mySerial,'%f\n',kd);
             fprintf('\n');
             
-        case 'j'
+        case 'j'                            % Get position gains
             gains = zeros(1,3);
             gains(1,:) = fscanf(mySerial, '%f %f %f');
             fprintf('The position controller is using Kp = %.4f, Ki = %.4f, and Kd = %.4f\n\n',gains(1),gains(2),gains(3));
@@ -111,23 +111,27 @@ while ~has_quit
         
         case 'm'                            % Load step trajectory
             A = input('Enter step trajectory: ');
-            ref = genRef(A,'step'); % generate step reference 
-            N = length(ref); % 200Hz position controller,
-                                          % so 200 samples per second
-            fprintf(mySerial,'%d\n',N); % send the number of samples N
-            for i = 1:N % send N samples
+            ref = genRef(A,'step');         % generate step reference 
+            N = length(ref);                % 200Hz position controller,
+                                            % so 200 samples per second
+            fprintf(mySerial,'%d\n',N);     % send the number of samples N
+            for i = 1:N                     % send N samples
                 fprintf(mySerial,'%f\n', ref(i));
             end
             
         case 'n'                            % Load cubic trajectory
             A = input('Enter cubic trajectory: ');
-            ref = genRef(A,'cubic'); % generate cubic reference 
-            N = length(ref); % 200Hz position controller,
-                                          % so 200 samples per second
-            fprintf(mySerial,'%d\n',N); % send the number of samples N
-            for i = 1:N % send N samples
+            ref = genRef(A,'cubic');        % generate cubic reference 
+            N = length(ref);                % 200Hz position controller,
+                                            % so 200 samples per second
+            fprintf(mySerial,'%d\n',N);     % send the number of samples N
+            for i = 1:N                     % send N samples
                 fprintf(mySerial,'%f\n', ref(i));
             end
+            
+        case 'o'
+            fprintf('Executing trajectory...\n\n');
+            read_plot_matrix_track(mySerial);
             
             
         case 'p'                            % Unpower the motor
