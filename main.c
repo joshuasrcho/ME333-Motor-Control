@@ -60,6 +60,7 @@ int main()
       case 'e': // resets encoder count/angle
       {
         encoder_reset();
+        break;
       }
 
       case 'f': // set PWM (-100 t0 100)
@@ -125,6 +126,16 @@ int main()
           sprintf(buffer,"%d %f\r\n",get_ref_current_array(i),get_actual_current_array(i));
           NU32_WriteUART3(buffer);
         }
+        break;
+      }
+
+      case 'l': // Go to angle (deg)
+      {
+        float angle;
+        NU32_ReadUART3(buffer,BUF_SIZE); // user enters the desired angle of the motor in degrees
+        sscanf(buffer,"%f",&angle);
+        set_target_angle(angle);
+        set_mode(HOLD); // switch to HOLD mode
         break;
       }
 

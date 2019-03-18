@@ -4,6 +4,7 @@
 #include "NU32.h"
 
 static volatile int duty_cycle;
+static volatile float target_current;
 static volatile float KP, KI;
 static volatile int ref_current_array[PLOTPTS];
 static volatile float actual_current_array[PLOTPTS];
@@ -21,14 +22,8 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) Timer4ISR(void) {
 
     case 1: // PWM module
     {
-      if (duty_cycle < 0){ // if duty cycle is negative
-        OC1RS = duty_cycle * -1; // make sure OC1RS is positive
-        LATBbits.LATB1 = 0;  // go reverse direction
-      }
-      else{
-        OC1RS = duty_cycle;
-        LATBbits.LATB1 = 1;
-      }
+      send_pwm_signal(); // send PWM signal specified by user
+
       break;
     }
 
@@ -47,15 +42,7 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) Timer4ISR(void) {
 
       // put reference current and actual current into PI controller
       current_controller(actual_current, ref_current);
-
-      if (duty_cycle < 0){ // if duty cycle is negative
-        OC1RS = duty_cycle * -1; // make sure OC1RS is positive
-        LATBbits.LATB1 = 0;  // go reverse direction
-      }
-      else{
-        OC1RS = duty_cycle;
-        LATBbits.LATB1 = 1;
-      }
+      send_pwm_signal();
 
       // store reference and actual current into array so we can plot them later
       ref_current_array[plotind] = ref_current;
@@ -70,6 +57,16 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) Timer4ISR(void) {
         break;
       }
       plotind ++;
+    }
+
+    case 3: // HOLD mode
+    {
+      // take reference current from position PID controller
+      static float actual_current = 0;
+      actual_current = get_current(); // measure current
+      current_controller(actual_current, target_current);
+      send_pwm_signal();
+      break;
     }
   }
   IFS0bits.T4IF = 0; // clear interrupt flag
@@ -86,10 +83,27 @@ void set_duty_cycle(char percentage){ // set PWM duty cycle to the value -100 to
   duty_cycle = percentage/100.0 * PR2; // convert duty cycle percentage to OC1RS value
 }
 
+void send_pwm_signal(){
+
+  if (duty_cycle < 0){ // if duty cycle is negative
+    OC1RS = duty_cycle * -1; // make sure OC1RS is positive and send signal
+    LATBbits.LATB1 = 0;  // go reverse direction
+  }
+  else{
+    OC1RS = duty_cycle;
+    LATBbits.LATB1 = 1;
+  }
+}
+
+
 void set_current_gains(float kp, float ki){ // set kp and ki based on user input from menu item 'g'
   KP = kp;
   KI = ki;
   Eint = 0;
+}
+
+void set_target_current(float target){
+  target_current = target;
 }
 
 float get_current_kp(){ // send kp value for menu item 'h'

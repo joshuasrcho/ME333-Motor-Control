@@ -21,8 +21,7 @@ int encoder_counts(void) {
 
 float encoder_degrees(void){
   float deg = 0;
-  encoder_command(1);
-  deg = (encoder_command(1)-32768)*(360.0/448.0)*(0.25); // Encoder has 448 lines and has 4x resolution,
+  deg = (encoder_counts()-32768)*(360.0/448.0)*(0.25); // Encoder has 448 lines and has 4x resolution,
                                                         // so 4 count = (360/448) degrees
   return deg;
 }
