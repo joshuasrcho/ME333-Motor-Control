@@ -120,8 +120,8 @@ while ~has_quit
             end
             
         case 'n'                            % Load cubic trajectory
-            A = input('Enter cubic trajectory: ');
-            ref = genRef(A,'cubic'); % generate cubic reference 
+            A = input('Enter step trajectory: ');
+            ref = genRef(A,'step'); % generate step reference 
             N = length(ref); % 200Hz position controller,
                                           % so 200 samples per second
             fprintf(mySerial,'%d\n',N); % send the number of samples N

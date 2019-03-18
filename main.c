@@ -139,6 +139,42 @@ int main()
         break;
       }
 
+      case 'm': // Load step trajectory
+      {
+        int num_samples, i;
+        NU32_ReadUART3(buffer,BUF_SIZE); // obtain the number of reference trajectory samples
+        sscanf(buffer,"%d",&num_samples);
+
+        float ref_trajectory[num_samples];
+
+        for (i=0; i<num_samples; i++){
+          NU32_ReadUART3(buffer,BUF_SIZE); // obtain all reference trajectory samples
+          sscanf(buffer,"%d",&(ref_trajectory[i]));
+        }
+        break;
+      }
+
+      case 'n': // Load cubic ref_trajectory
+      {
+        int num_samples, i;
+        NU32_ReadUART3(buffer,BUF_SIZE); // obtain the number of reference trajectory samples
+        sscanf(buffer,"%d",&num_samples);
+
+        float ref_trajectory[num_samples];
+
+        for (i=0; i<num_samples; i++){
+          NU32_ReadUART3(buffer,BUF_SIZE); // obtain all reference trajectory samples
+          sscanf(buffer,"%d",&(ref_trajectory[i]));
+        }
+        break;
+      }
+
+      case 'o': // Execute trajectory
+      {
+        set_mode(TRACK);
+        break;
+      }
+
       case 'p': // unpower the motor
       {
         set_mode(IDLE); // switch to IDLE mode
