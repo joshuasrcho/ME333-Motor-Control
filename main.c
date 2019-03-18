@@ -151,6 +151,7 @@ int main()
           NU32_ReadUART3(buffer,BUF_SIZE); // obtain all reference trajectory samples
           sscanf(buffer,"%d",&(ref_trajectory[i]));
         }
+        set_trajectory(num_samples,ref_trajectory);
         break;
       }
 
@@ -166,6 +167,7 @@ int main()
           NU32_ReadUART3(buffer,BUF_SIZE); // obtain all reference trajectory samples
           sscanf(buffer,"%d",&(ref_trajectory[i]));
         }
+        set_trajectory(num_samples,ref_trajectory);
         break;
       }
 

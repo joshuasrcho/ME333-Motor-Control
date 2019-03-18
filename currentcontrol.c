@@ -68,6 +68,15 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) Timer4ISR(void) {
       send_pwm_signal();
       break;
     }
+
+    case 4: // TRACK mode
+    {
+      static float actual_current = 0;
+      actual_current = get_current(); // measure current
+      current_controller(actual_current, target_current);
+      send_pwm_signal();
+      break;
+    }
   }
   IFS0bits.T4IF = 0; // clear interrupt flag
 }
